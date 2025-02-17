@@ -1,0 +1,233 @@
+<!-- templates/survey.html -->
+{% extends "base.html" %}
+{% block title %}Sondage{% endblock %}
+{% block content %}
+<div class="wizard-container">
+    <!-- Logo de l'entreprise -->
+    <div class="logo text-center mb-3">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo de l'entreprise" style="max-width:150px;">
+    </div>
+    <h1 class="mt-4 text-center">Formulaire Gestion de Projet</h1>
+    <form id="surveyForm" method="POST" action="">
+        <!-- Étape 0 : Informations Personnelles -->
+        <div class="step" id="step-0">
+            <h2>Informations Personnelles</h2>
+            <div class="form-group">
+                <label for="nom">Nom et Prénom (obligatoire) :</label>
+                <input type="text" class="form-control" name="nom" id="nom" required>
+            </div>
+            <div class="form-group">
+                <label for="departement">Département :</label>
+                <select class="form-control" name="departement" id="departement" required>
+                    <option value="">-- Sélectionner --</option>
+                    <option value="administration">Administration</option>
+                    <option value="gestion de projet">Gestion de Projet</option>
+                    <option value="editorial">Editorial</option>
+                    <option value="it">IT</option>
+                    <option value="comptabilite">Comptabilité</option>
+                    <option value="communication">Communication</option>
+                    <option value="multimedia">Multimedia</option>
+                </select>
+            </div>
+        </div>
+        <!-- Étapes pour chaque question -->
+        {% for q in questions %}
+        <div class="step" id="step-{{ loop.index }}">
+            <h2>{{ q.titre }}</h2>
+            <div class="card mt-3">
+                <div class="card-body">
+                    {% if q.type_question == 'multiple' %}
+                        {% for opt in q.get_options() %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="question_{{ q.id }}" value="{{ opt }}" id="q{{ q.id }}_{{ loop.index }}">
+                                <label class="form-check-label" for="q{{ q.id }}_{{ loop.index }}">{{ opt }}</label>
+                            </div>
+                        {% endfor %}
+                    {% elif q.type_question == 'dropdown' %}
+                        <div class="form-group">
+                            <select class="form-control" name="question_{{ q.id }}">
+                                <option value="">-- Sélectionner --</option>
+                                {% for opt in q.get_options() %}
+                                    <option value="{{ opt }}">{{ opt }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% elif q.type_question == 'dropdown9' %}
+                        {% for i in range(1, 10) %}
+                            <div class="form-group">
+                                <label for="q{{ q.id }}_{{ i }}">Menu déroulant {{ i }} :</label>
+                                <select class="form-control" name="question_{{ q.id }}_{{ i }}" id="q{{ q.id }}_{{ i }}">
+                                    <option value="">-- Sélectionner --</option>
+                                    {% for opt in q.get_options() %}
+                                        <option value="{{ opt }}">{{ opt }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endfor %}
+                    {% elif q.type_question == 'texte' %}
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="question_{{ q.id }}" placeholder="Votre réponse">
+                        </div>
+                    {% elif q.type_question == 'numerique' %}
+                        <div class="form-group">
+                            <input type="number" class="form-control" name="question_{{ q.id }}" placeholder="Votre réponse">
+                        </div>
+                    {% elif q.type_question == 'date' %}
+                        <div class="form-group">
+                            <input type="date" class="form-control" name="question_{{ q.id }}">
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="question_{{ q.id }}" placeholder="Votre réponse">
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <!-- Étape finale : Message de remerciement -->
+        <div class="step" id="step-final">
+            <h2>Merci d'avoir répondu au formulaire !</h2>
+            <p>Nous vous remercions pour votre participation.</p>
+            <button type="button" class="btn btn-success d-block mx-auto" id="closeBtn">Fermer la fenêtre</button>
+        </div>
+        <!-- Boutons de navigation -->
+        <div class="navigation-buttons text-center mt-3">
+            <button type="button" class="btn btn-secondary" id="prevBtn" onclick="prevStep()">Précédent</button>
+            <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">Suivant</button>
+        </div>
+    </form>
+</div>
+
+<style>
+/* Styles généraux */
+body {
+    background-color: #ffffff;
+    color: #000;
+}
+
+.wizard-container {
+    max-width: 600px;
+    margin: 30px auto;
+    background: #ffffff;
+    border: 2px solid rgb(0,157,209);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 0px 15px rgba(0,157,209,0.3);
+}
+
+.step {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.step.active {
+    display: block;
+}
+
+/* Boutons de navigation */
+.navigation-buttons button {
+    margin: 5px;
+}
+
+/* Animation de fondu */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Style des boutons avec la couleur de l'entreprise */
+.btn-primary {
+    background-color: rgb(0,157,209);
+    border-color: rgb(0,157,209);
+}
+
+.btn-primary:hover {
+    background-color: rgb(0,130,180);
+    border-color: rgb(0,130,180);
+}
+
+.btn-secondary {
+    background-color: #ccc;
+    border-color: #bbb;
+}
+</style>
+
+<script>
+let currentStep = 0;
+const steps = document.querySelectorAll('.step');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const closeBtn = document.getElementById('closeBtn');
+const form = document.getElementById('surveyForm');
+
+function showStep(n) {
+    steps.forEach((step, index) => {
+        step.classList.remove('active');
+        if (index === n) {
+            step.classList.add('active');
+        }
+    });
+    if (n === 0) {
+        prevBtn.style.display = 'none';
+    } else {
+        prevBtn.style.display = 'inline-block';
+    }
+    if (n === steps.length - 2) {
+        nextBtn.innerText = 'Envoyer';
+    } else if (n === steps.length - 1) {
+        nextBtn.style.display = 'none';
+        prevBtn.style.display = 'none';
+    } else {
+        nextBtn.innerText = 'Suivant';
+        nextBtn.style.display = 'inline-block';
+    }
+}
+
+function nextStep() {
+    if (currentStep < steps.length - 2) {
+        currentStep++;
+        showStep(currentStep);
+    } else if (currentStep === steps.length - 2) {
+        submitForm();
+    }
+}
+
+function prevStep() {
+    if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+    }
+}
+
+function submitForm() {
+    const formData = new FormData(form);
+    fetch(form.action || window.location.href, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        currentStep = steps.length - 1;
+        showStep(currentStep);
+    })
+    .catch(error => {
+        alert("Erreur lors de la soumission du formulaire.");
+        console.error(error);
+    });
+}
+
+if (closeBtn) {
+    closeBtn.addEventListener('click', function() {
+        window.close();
+        if (!window.closed) {
+            alert("Veuillez fermer cette fenêtre manuellement.");
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    showStep(currentStep);
+});
+</script>
+{% endblock %}

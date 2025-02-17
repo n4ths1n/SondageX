@@ -1,0 +1,29 @@
+<!-- templates/modifier_question.html -->
+{% extends "base.html" %}
+{% block title %}Modifier la Question{% endblock %}
+{% block content %}
+<h1 class="mt-4">Modifier la Question</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="titre">Titre de la question :</label>
+        <input type="text" class="form-control" name="titre" id="titre" value="{{ question.titre }}" required>
+    </div>
+    <div class="form-group">
+        <label for="type_question">Type de question :</label>
+        <select class="form-control" name="type_question" id="type_question" required>
+            <option value="multiple" {% if question.type_question=='multiple' %}selected{% endif %}>Multiple (cases à cocher)</option>
+            <option value="dropdown" {% if question.type_question=='dropdown' %}selected{% endif %}>Dropdown (menu déroulant)</option>
+            <option value="dropdown9" {% if question.type_question=='dropdown9' %}selected{% endif %}>Dropdown9 (9 menus déroulants)</option>
+            <option value="texte" {% if question.type_question=='texte' %}selected{% endif %}>Réponse Texte</option>
+            <option value="numerique" {% if question.type_question=='numerique' %}selected{% endif %}>Réponse Numérique</option>
+            <option value="date" {% if question.type_question=='date' %}selected{% endif %}>Réponse Date</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="options">Options (séparées par des virgules, applicable pour les types "multiple", "dropdown" et "dropdown9") :</label>
+        <input type="text" class="form-control" name="options" id="options" value="{{ options_str }}">
+    </div>
+    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Enregistrer</button>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Annuler</a>
+</form>
+{% endblock %}

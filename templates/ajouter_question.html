@@ -1,0 +1,29 @@
+<!-- templates/ajouter_question.html -->
+{% extends "base.html" %}
+{% block title %}Ajouter une Question{% endblock %}
+{% block content %}
+<h1 class="mt-4">Ajouter une Question</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="titre">Titre de la question :</label>
+        <input type="text" class="form-control" name="titre" id="titre" required>
+    </div>
+    <div class="form-group">
+        <label for="type_question">Type de question :</label>
+        <select class="form-control" name="type_question" id="type_question" required>
+            <option value="multiple">Multiple (cases à cocher)</option>
+            <option value="dropdown">Dropdown (menu déroulant)</option>
+            <option value="dropdown9">Dropdown9 (9 menus déroulants)</option>
+            <option value="texte">Réponse Texte</option>
+            <option value="numerique">Réponse Numérique</option>
+            <option value="date">Réponse Date</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="options">Options (séparées par des virgules, applicable pour les types "multiple", "dropdown" et "dropdown9") :</label>
+        <input type="text" class="form-control" name="options" id="options">
+    </div>
+    <button type="submit" class="btn btn-success"><i class="fas fa-plus"></i> Ajouter</button>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Annuler</a>
+</form>
+{% endblock %}

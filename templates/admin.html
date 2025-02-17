@@ -1,0 +1,92 @@
+<!-- templates/admin.html -->
+{% extends "base.html" %}
+{% block title %}Tableau de Bord Administrateur{% endblock %}
+{% block content %}
+<h1 class="mt-4">Tableau de Bord Administrateur</h1>
+<p><a href="{{ url_for('logout') }}">Se déconnecter</a></p>
+
+<h2 class="mt-4">Gestion des Questions</h2>
+<p>
+  <a href="{{ url_for('ajouter_question') }}" class="btn btn-success">
+    <i class="fas fa-plus"></i> Ajouter une Question
+  </a>
+</p>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Titre</th>
+            <th>Type</th>
+            <th>Options</th>
+            <th>Actions</th>
+            <th>Visualisations</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for question in questions %}
+        <tr>
+            <td>{{ question.id }}</td>
+            <td>{{ question.titre }}</td>
+            <td>{{ question.type_question }}</td>
+            <td>{{ question.get_options()|join(', ') }}</td>
+            <td>
+                <a href="{{ url_for('modifier_question', question_id=question.id) }}" class="btn btn-warning btn-sm">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form action="{{ url_for('supprimer_question', question_id=question.id) }}" method="POST" style="display:inline-block;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette question ?')">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
+            </td>
+            <td>
+                <a href="{{ url_for('graphique_barre', question_id=question.id) }}" class="btn btn-info btn-sm" title="Graphique en Barres">
+                  <i class="fas fa-chart-bar"></i>
+                </a>
+                <a href="{{ url_for('graphique_secteurs', question_id=question.id) }}" class="btn btn-info btn-sm" title="Graphique en Secteurs">
+                  <i class="fas fa-chart-pie"></i>
+                </a>
+                <a href="{{ url_for('sociogramme', question_id=question.id) }}" class="btn btn-info btn-sm" title="Sociogramme">
+                  <i class="fas fa-network-wired"></i>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Bouton pour supprimer toutes les réponses -->
+<form action="{{ url_for('supprimer_toutes_reponses') }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer toutes les réponses ?');" class="mb-3">
+    <button type="submit" class="btn btn-danger">
+      <i class="fas fa-trash"></i> Supprimer toutes les réponses
+    </button>
+</form>
+
+<h2 class="mt-4">Réponses</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Département</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in responses %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.nom }}</td>
+            <td>{{ r.departement }}</td>
+            <td>{{ r.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+            <td>
+                <a href="{{ url_for('voir_reponse', response_id=r.id) }}" class="btn btn-primary btn-sm" title="Voir la Réponse">
+                  <i class="fas fa-eye"></i>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

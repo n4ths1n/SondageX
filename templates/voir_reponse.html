@@ -1,0 +1,12 @@
+<!-- templates/voir_reponse.html -->
+{% extends "base.html" %}
+{% block title %}Voir la Réponse{% endblock %}
+{% block content %}
+<h2>Réponse de {{ response.nom }}</h2>
+<ul>
+    {% for key, value in data.items() %}
+        <li><strong>Question {{ key }}</strong> : {{ value }}</li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Retour</a>
+{% endblock %}

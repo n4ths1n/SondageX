@@ -1,0 +1,8 @@
+<!-- templates/sociogramme.html -->
+{% extends "base.html" %}
+{% block title %}Sociogramme{% endblock %}
+{% block content %}
+<h1 class="mt-4">Sociogramme pour: {{ question.titre }}</h1>
+<img src="data:image/png;base64,{{ graph_url }}" class="img-fluid" alt="Sociogramme">
+<p><a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mt-3">Retour au Tableau de Bord</a></p>
+{% endblock %}
