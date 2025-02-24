@@ -1,13 +1,21 @@
-<!-- templates/modifier_question.html -->
 {% extends "base.html" %}
-{% block title %}Modifier la Question{% endblock %}
+
+{% block title %}
+  Modifier la Question
+{% endblock %}
+
 {% block content %}
+<!-- Titre de la page de modification d'une question -->
 <h1 class="mt-4">Modifier la Question</h1>
+
+<!-- Formulaire pour modifier une question existante -->
 <form method="POST">
+    <!-- Champ pour modifier le titre de la question, pré-rempli avec le titre actuel -->
     <div class="form-group">
         <label for="titre">Titre de la question :</label>
         <input type="text" class="form-control" name="titre" id="titre" value="{{ question.titre }}" required>
     </div>
+    <!-- Sélecteur pour choisir le type de question, avec l'option actuelle sélectionnée -->
     <div class="form-group">
         <label for="type_question">Type de question :</label>
         <select class="form-control" name="type_question" id="type_question" required>
@@ -19,11 +27,14 @@
             <option value="date" {% if question.type_question=='date' %}selected{% endif %}>Réponse Date</option>
         </select>
     </div>
+    <!-- Champ pour modifier les options de la question, pré-rempli avec les options actuelles -->
     <div class="form-group">
         <label for="options">Options (séparées par des virgules, applicable pour les types "multiple", "dropdown" et "dropdown9") :</label>
         <input type="text" class="form-control" name="options" id="options" value="{{ options_str }}">
     </div>
+    <!-- Bouton pour enregistrer les modifications -->
     <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Enregistrer</button>
+    <!-- Lien pour annuler et retourner au tableau de bord -->
     <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Annuler</a>
 </form>
 {% endblock %}

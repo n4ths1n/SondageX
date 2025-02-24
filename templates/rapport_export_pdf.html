@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Rapport PDF Statique
+{% endblock %}
+
+{% block content %}
+<!-- Titre de la page pour le rapport PDF statique -->
+<h1 class="mt-4">Rapport Statique (PDF)</h1>
+
+<!-- Description indiquant l'origine des graphiques -->
+<p>Graphiques statiques générés via Matplotlib.</p>
+
+<!-- Boucle sur les données PDF pour chaque question -->
+{% for item in pdf_data %}
+  <div class="card mb-4">
+    <!-- En-tête de la carte affichant le titre de la question -->
+    <div class="card-header">
+      <h3>{{ item.question.titre }}</h3>
+    </div>
+    <!-- Corps de la carte affichant le graphique sous forme d'image -->
+    <div class="card-body">
+      <img src="data:image/png;base64,{{ item.bar_chart }}" alt="Bar Chart" style="max-width: 600px;">
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}

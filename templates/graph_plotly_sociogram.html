@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Sociogramme Interactif
+{% endblock %}
+
+{% block content %}
+<!-- Affichage du titre avec le nom de la question -->
+<h1 class="mt-4">Sociogramme Interactif pour : {{ question.titre }}</h1>
+
+<!-- Inclusion de la bibliothèque Plotly pour les graphiques interactifs -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- Conteneur pour le sociogramme -->
+<div id="socio-chart"></div>
+
+<script>
+  // Transformation des données JSON envoyées par le serveur en objets JavaScript
+  var nodes = JSON.parse('{{ nodes|safe }}');
+  var edges = JSON.parse('{{ edges|safe }}');
+  
+  // Récupération des noms des noeuds à partir des données
+  var nodeNames = Object.keys(nodes);
+  
+  // Calcul de l'angle entre chaque noeud pour un positionnement en cercle
+  var angleStep = 2 * Math.PI / nodeNames.length;
+  
+  // Initialisation des tableaux pour les coordonnées, étiquettes et couleurs des noeuds
+  var xcoords = [];
+  var ycoords = [];
+  var texts = [];
+  var colors = [];
+  
+  // Positionnement de chaque noeud sur le cercle et préparation des informations associées
+  for (var i = 0; i < nodeNames.length; i++) {
+    var angle = i * angleStep;
+    xcoords.push(Math.cos(angle));
+    ycoords.push(Math.sin(angle));
+    texts.push(nodes[nodeNames[i]].label);
+    colors.push(nodes[nodeNames[i]].group === 'option' ? 'lightgreen' : 'lightblue');
+  }
+  
+  // Création des arêtes reliant les noeuds
+  var edge_x = [];
+  var edge_y = [];
+  edges.forEach(function(edge) {
+    var i1 = nodeNames.indexOf(edge[0]);
+    var i2 = nodeNames.indexOf(edge[1]);
+    edge_x.push(xcoords[i1]);
+    edge_x.push(xcoords[i2]);
+    edge_x.push(null);
+    edge_y.push(ycoords[i1]);
+    edge_y.push(ycoords[i2]);
+    edge_y.push(null);
+  });
+  
+  // Définition de la trace pour les arêtes (lignes)
+  var edge_trace = {
+    x: edge_x,
+    y: edge_y,
+    mode: 'lines',
+    line: { width: 1, color: '#888' },
+    hoverinfo: 'none'
+  };
+  
+  // Définition de la trace pour les noeuds (points et texte)
+  var node_trace = {
+    x: xcoords,
+    y: ycoords,
+    mode: 'markers+text',
+    text: texts,
+    textposition: 'top center',
+    hoverinfo: 'text',
+    marker: {
+      color: colors,
+      size: colors.map(c => c === 'lightgreen' ? 20 : 12),
+      line: { color: '#555', width: 1 }
+    }
+  };
+  
+  // Configuration de la mise en page du sociogramme
+  var layout = {
+    title: 'Sociogramme - {{ question.titre|e }}',
+    showlegend: false,
+    margin: { l: 60, r: 60, t: 120, b: 80 },
+    xaxis: { showgrid: false, zeroline: false, showticklabels: false },
+    yaxis: { showgrid: false, zeroline: false, showticklabels: false }
+  };
+  
+  // Affichage du sociogramme dans le conteneur "socio-chart"
+  Plotly.newPlot('socio-chart', [edge_trace, node_trace], layout);
+</script>
+
+<!-- Affichage du classement des réponses si disponible -->
+{% if top_3 %}
+  <h5>Top 3 réponses les plus sélectionnées :</h5>
+  <ul>
+    {% for opt, count in top_3 %}
+      <li>{{ opt }} : {{ count }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% if bottom_3 %}
+  <h5>Top 3 réponses les moins sélectionnées :</h5>
+  <ul>
+    {% for opt, count in bottom_3 %}
+      <li>{{ opt }} : {{ count }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<!-- Lien pour revenir au tableau de bord administrateur -->
+<p><a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mt-3">Retour au Tableau de Bord</a></p>
+{% endblock %}

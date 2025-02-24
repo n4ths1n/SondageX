@@ -1,12 +1,20 @@
-<!-- templates/voir_reponse.html -->
 {% extends "base.html" %}
-{% block title %}Voir la Réponse{% endblock %}
+
+{% block title %}
+  Voir la Réponse
+{% endblock %}
+
 {% block content %}
+<!-- Affichage du nom de la personne ayant répondu -->
 <h2>Réponse de {{ response.nom }}</h2>
+
+<!-- Liste des réponses associées à chaque question -->
 <ul>
     {% for key, value in data.items() %}
         <li><strong>Question {{ key }}</strong> : {{ value }}</li>
     {% endfor %}
 </ul>
+
+<!-- Lien pour revenir au tableau de bord administrateur -->
 <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Retour</a>
 {% endblock %}

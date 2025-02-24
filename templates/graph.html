@@ -1,8 +1,23 @@
-<!-- templates/graph.html -->
 {% extends "base.html" %}
-{% block title %}{{ type_graph }}{% endblock %}
+
+{% block title %}
+  {{ type_graph }}
+{% endblock %}
+
 {% block content %}
-<h1 class="mt-4">{{ type_graph }} pour: {{ titre }}</h1>
+<!-- Titre de la page affichant le type de graphique et le titre associé -->
+<h1 class="mt-4">{{ type_graph }} pour : {{ titre }}</h1>
+
+<!-- Affichage du graphique sous forme d'image encodée en base64 -->
 <img src="data:image/png;base64,{{ graph_url }}" class="img-fluid" alt="{{ type_graph }}">
-<p><a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mt-3">Retour au Tableau de Bord</a></p>
+
+<!-- Lien pour revenir au tableau de bord administrateur -->
+<p>
+  <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mt-3">Retour au Tableau de Bord</a>
+</p>
+
+<!-- Bouton pour télécharger l'image du graphique -->
+<a href="data:image/png;base64,{{ graph_url }}" download="{{ type_graph }}_{{ titre|replace(' ', '_') }}.png" class="btn btn-success mt-3">
+  <i class="fas fa-download"></i> Télécharger l'image
+</a>
 {% endblock %}

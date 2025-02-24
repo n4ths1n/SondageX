@@ -1,27 +1,25 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <!-- Meta tag para que sea responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bloc de titre, par défaut "Sondage" si non redéfini -->
     <title>{% block title %}Sondage{% endblock %}</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo.ico') }}">
-    <!-- Bootstrap CSS -->
+    <!-- Icône du site -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='gbnews_logo.ico') }}">
+    <!-- Feuille de style Bootstrap pour la mise en page -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <!-- Font Awesome CSS -->
+    <!-- Feuille de style Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Style personnalisé pour le corps de la page -->
     <style>
-      body {
-          background-color: #ffffff;
-          color: #000;
-      }
-      /* Puedes agregar estilos adicionales responsive aquí si lo deseas */
+      body { background-color: #ffffff; color: #000; }
     </style>
 </head>
 <body>
+    <!-- Conteneur principal de la page -->
     <div class="container">
+        <!-- Affichage des messages flash (notifications) -->
         {% with messages = get_flashed_messages() %}
           {% if messages %}
             <div class="alert alert-info mt-3">
@@ -31,12 +29,15 @@
             </div>
           {% endif %}
         {% endwith %}
+        <!-- Bloc destiné à recevoir le contenu spécifique de chaque page -->
         {% block content %}{% endblock %}
     </div>
-    <!-- Bootstrap JS, Popper.js y jQuery -->
+    <!-- Inclusion des scripts JavaScript -->
+    <!-- jQuery pour la manipulation du DOM -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <!-- Popper.js pour la gestion des tooltips et popovers -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <!-- Bootstrap JS pour les composants interactifs -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>
-

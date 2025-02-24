@@ -1,92 +1,165 @@
-<!-- templates/admin.html -->
 {% extends "base.html" %}
-{% block title %}Tableau de Bord Administrateur{% endblock %}
+
+{% block title %}
+  Tableau de Bord Administrateur
+{% endblock %}
+
 {% block content %}
+<!-- Titre principal de la page -->
 <h1 class="mt-4">Tableau de Bord Administrateur</h1>
+
+<!-- Lien pour se déconnecter -->
 <p><a href="{{ url_for('logout') }}">Se déconnecter</a></p>
 
+<!-- Message informatif sur la fonctionnalité de réorganisation par glisser-déposer -->
+<div class="alert alert-info">
+  Vous pouvez <strong>glisser-déposer</strong> les questions pour changer leur ordre.
+</div>
+
+<!-- Section de gestion des questions -->
 <h2 class="mt-4">Gestion des Questions</h2>
 <p>
-  <a href="{{ url_for('ajouter_question') }}" class="btn btn-success">
-    <i class="fas fa-plus"></i> Ajouter une Question
-  </a>
+  <!-- Bouton pour ajouter une nouvelle question -->
+  <a href="{{ url_for('ajouter_question') }}" class="btn btn-success"><i class="fas fa-plus"></i> Ajouter une Question</a>
 </p>
+<!-- Tableau affichant la liste des questions -->
 <table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Titre</th>
-            <th>Type</th>
-            <th>Options</th>
-            <th>Actions</th>
-            <th>Visualisations</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for question in questions %}
-        <tr>
-            <td>{{ question.id }}</td>
-            <td>{{ question.titre }}</td>
-            <td>{{ question.type_question }}</td>
-            <td>{{ question.get_options()|join(', ') }}</td>
-            <td>
-                <a href="{{ url_for('modifier_question', question_id=question.id) }}" class="btn btn-warning btn-sm">
-                  <i class="fas fa-edit"></i>
-                </a>
-                <form action="{{ url_for('supprimer_question', question_id=question.id) }}" method="POST" style="display:inline-block;">
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette question ?')">
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-                </form>
-            </td>
-            <td>
-                <a href="{{ url_for('graphique_barre', question_id=question.id) }}" class="btn btn-info btn-sm" title="Graphique en Barres">
-                  <i class="fas fa-chart-bar"></i>
-                </a>
-                <a href="{{ url_for('graphique_secteurs', question_id=question.id) }}" class="btn btn-info btn-sm" title="Graphique en Secteurs">
-                  <i class="fas fa-chart-pie"></i>
-                </a>
-                <a href="{{ url_for('sociogramme', question_id=question.id) }}" class="btn btn-info btn-sm" title="Sociogramme">
-                  <i class="fas fa-network-wired"></i>
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
+  <thead>
+    <tr>
+      <th>N°</th>
+      <th>Titre</th>
+      <th>Type</th>
+      <th>Options</th>
+      <th>Actions</th>
+      <th>Visualisations</th>
+    </tr>
+  </thead>
+  <tbody id="questions-tbody">
+    {% for question in questions %}
+    <!-- Pour chaque question, on affiche ses informations dans une ligne -->
+    <tr data-id="{{ question.id }}">
+      <td>{{ question.ordre + 1 }}</td>
+      <td>{{ question.titre }}</td>
+      <td>{{ question.type_question }}</td>
+      <td>{{ question.get_options()|join(', ') }}</td>
+      <td>
+        <!-- Bouton pour modifier la question -->
+        <a href="{{ url_for('modifier_question', question_id=question.id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+        <!-- Formulaire pour supprimer la question avec confirmation -->
+        <form action="{{ url_for('supprimer_question', question_id=question.id) }}" method="POST" style="display:inline-block;">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette question ?')">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </form>
+      </td>
+      <td>
+        <!-- Liens pour afficher différents types de graphiques -->
+        <a href="{{ url_for('graphique_barre', question_id=question.id) }}" class="btn btn-info btn-sm" title="Graphique en Barres"><i class="fas fa-chart-bar"></i></a>
+        <a href="{{ url_for('graphique_secteurs', question_id=question.id) }}" class="btn btn-info btn-sm" title="Graphique en Secteurs"><i class="fas fa-chart-pie"></i></a>
+        <a href="{{ url_for('sociogramme', question_id=question.id) }}" class="btn btn-info btn-sm" title="Sociogramme"><i class="fas fa-network-wired"></i></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 
-<!-- Bouton pour supprimer toutes les réponses -->
-<form action="{{ url_for('supprimer_toutes_reponses') }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer toutes les réponses ?');" class="mb-3">
-    <button type="submit" class="btn btn-danger">
-      <i class="fas fa-trash"></i> Supprimer toutes les réponses
-    </button>
+<!-- Formulaire pour supprimer toutes les réponses avec confirmation -->
+<form action="{{ url_for('supprimer_toutes_reponses') }}" method="POST" onsubmit="return confirm('Supprimer toutes les réponses ?');" class="mb-3">
+  <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> Supprimer toutes les réponses</button>
 </form>
 
+<!-- Section affichant la liste des réponses -->
 <h2 class="mt-4">Réponses</h2>
 <table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nom</th>
-            <th>Département</th>
-            <th>Date</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for r in responses %}
-        <tr>
-            <td>{{ r.id }}</td>
-            <td>{{ r.nom }}</td>
-            <td>{{ r.departement }}</td>
-            <td>{{ r.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-            <td>
-                <a href="{{ url_for('voir_reponse', response_id=r.id) }}" class="btn btn-primary btn-sm" title="Voir la Réponse">
-                  <i class="fas fa-eye"></i>
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nom</th>
+      <th>Pôle</th>
+      <th>Date</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in responses %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td>{{ r.nom }}</td>
+      <td>{{ r.departement }}</td>
+      <td>{{ r.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+      <td>
+        <!-- Bouton pour visualiser la réponse -->
+        <a href="{{ url_for('voir_reponse', response_id=r.id) }}" class="btn btn-primary btn-sm" title="Voir la Réponse"><i class="fas fa-eye"></i></a>
+        <!-- Formulaire pour supprimer la réponse avec confirmation -->
+        <form action="{{ url_for('supprimer_reponse', response_id=r.id) }}" method="POST" style="display:inline-block;">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cette réponse ?')">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
+
+<!-- Section pour l'exportation des données -->
+<h2 class="mt-4">Exportation des données</h2>
+<!-- Bouton pour ouvrir la modal d'exportation -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exportModal">
+  <i class="fas fa-file-export"></i> Exporter les données
+</button>
+
+<!-- Fenêtre modale pour choisir le format d'exportation -->
+<div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- Titre de la modal -->
+        <h5 class="modal-title" id="exportModalLabel">Choisissez le format d'exportation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <!-- Liens pour exporter en différents formats -->
+        <a href="{{ url_for('export_csv') }}" class="btn btn-secondary btn-block"><i class="fas fa-file-csv"></i> Exporter en CSV</a>
+        <a href="{{ url_for('export_html') }}" class="btn btn-secondary btn-block"><i class="fas fa-file-code"></i> Exporter en HTML</a>
+        <a href="{{ url_for('export_pdf') }}" class="btn btn-secondary btn-block"><i class="fas fa-file-pdf"></i> Exporter en PDF</a>
+      </div>
+      <div class="modal-footer">
+        <!-- Bouton pour fermer la modal -->
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Inclusion de la bibliothèque Sortable pour le drag-and-drop -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.10.2/Sortable.min.js"></script>
+<script>
+  // Récupération du tbody contenant les questions
+  var tbody = document.getElementById('questions-tbody');
+
+  // Initialisation du tri des questions par glisser-déposer
+  var sortable = Sortable.create(tbody, {
+    animation: 150,
+    onEnd: function (evt) {
+      // Création d'un tableau pour stocker l'ordre des questions
+      var order = [];
+      var rows = tbody.querySelectorAll('tr');
+      rows.forEach(function(row) {
+        order.push(row.getAttribute('data-id'));
+      });
+      // Envoi de l'ordre mis à jour vers le serveur via une requête POST
+      fetch('{{ url_for("mettre_a_jour_ordre_questions") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: order })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Rechargement de la page si la mise à jour a réussi
+        if(data.success) { location.reload(); }
+      });
+    }
+  });
+</script>
 {% endblock %}

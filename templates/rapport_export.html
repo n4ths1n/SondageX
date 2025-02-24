@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Rapport d'exportation
+{% endblock %}
+
+{% block content %}
+<!-- Titre principal du rapport d'exportation des données -->
+<h1 class="mt-4">Rapport d'exportation des données</h1>
+
+<!-- Parcours de chaque élément dans les données exportées -->
+{% for item in export_data %}
+  <div class="card mb-4">
+    <!-- En-tête de la carte affichant le titre de la question -->
+    <div class="card-header">
+      <h3>{{ item.question.titre }}</h3>
+    </div>
+    <!-- Corps de la carte contenant les détails de la répartition et les graphiques -->
+    <div class="card-body">
+      <!-- Section pour la répartition des réponses -->
+      <h5>Répartition des réponses :</h5>
+      {% if item.counts %}
+      <!-- Liste des réponses et leur nombre -->
+      <ul>
+        {% for option, count in item.counts.items() %}
+          <li><strong>{{ option }} :</strong> {{ count }} réponse(s)</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <!-- Message si aucune réponse n'est disponible pour cette question -->
+      <p>Aucune réponse pour cette question.</p>
+      {% endif %}
+      <!-- Affichage des graphiques et du sociogramme en trois colonnes -->
+      <div class="row">
+        <div class="col-md-4">
+          <h6>Graphique en Barres</h6>
+          <!-- Image du graphique en barres encodé en base64 -->
+          <img src="data:image/png;base64,{{ item.bar_chart }}" class="img-fluid" alt="Graphique en Barres">
+          <!-- Lien pour télécharger le graphique en barres -->
+          <a href="data:image/png;base64,{{ item.bar_chart }}" download="bar_chart_{{ item.question.titre|replace(' ', '_') }}.png" class="btn btn-success btn-block mt-2">
+            Télécharger
+          </a>
+        </div>
+        <div class="col-md-4">
+          <h6>Graphique en Secteurs</h6>
+          <!-- Image du graphique en secteurs encodé en base64 -->
+          <img src="data:image/png;base64,{{ item.pie_chart }}" class="img-fluid" alt="Graphique en Secteurs">
+          <!-- Lien pour télécharger le graphique en secteurs -->
+          <a href="data:image/png;base64,{{ item.pie_chart }}" download="pie_chart_{{ item.question.titre|replace(' ', '_') }}.png" class="btn btn-success btn-block mt-2">
+            Télécharger
+          </a>
+        </div>
+        <div class="col-md-4">
+          <h6>Sociogramme</h6>
+          <!-- Image du sociogramme encodé en base64 -->
+          <img src="data:image/png;base64,{{ item.sociogram }}" class="img-fluid" alt="Sociogramme">
+          <!-- Lien pour télécharger le sociogramme -->
+          <a href="data:image/png;base64,{{ item.sociogram }}" download="sociogramme_{{ item.question.titre|replace(' ', '_') }}.png" class="btn btn-success btn-block mt-2">
+            Télécharger
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+{% endblock %}

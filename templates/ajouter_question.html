@@ -1,13 +1,21 @@
-<!-- templates/ajouter_question.html -->
 {% extends "base.html" %}
-{% block title %}Ajouter une Question{% endblock %}
+
+{% block title %}
+  Ajouter une Question
+{% endblock %}
+
 {% block content %}
+<!-- Affichage du titre de la page -->
 <h1 class="mt-4">Ajouter une Question</h1>
+
+<!-- Formulaire pour ajouter une nouvelle question -->
 <form method="POST">
+    <!-- Champ pour saisir le titre de la question -->
     <div class="form-group">
         <label for="titre">Titre de la question :</label>
         <input type="text" class="form-control" name="titre" id="titre" required>
     </div>
+    <!-- Sélecteur pour choisir le type de question -->
     <div class="form-group">
         <label for="type_question">Type de question :</label>
         <select class="form-control" name="type_question" id="type_question" required>
@@ -19,11 +27,14 @@
             <option value="date">Réponse Date</option>
         </select>
     </div>
+    <!-- Champ pour entrer les options de réponse (utilisé pour certains types de questions) -->
     <div class="form-group">
         <label for="options">Options (séparées par des virgules, applicable pour les types "multiple", "dropdown" et "dropdown9") :</label>
         <input type="text" class="form-control" name="options" id="options">
     </div>
+    <!-- Bouton pour soumettre le formulaire -->
     <button type="submit" class="btn btn-success"><i class="fas fa-plus"></i> Ajouter</button>
+    <!-- Lien pour annuler et revenir au tableau de bord administrateur -->
     <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Annuler</a>
 </form>
 {% endblock %}

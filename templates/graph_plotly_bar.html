@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Graphique en Barres Interactif
+{% endblock %}
+
+{% block content %}
+<!-- Titre de la page incluant le titre de la question -->
+<h1 class="mt-4">Graphique en Barres Interactif - {{ question.titre }}</h1>
+
+<!-- Inclusion de la bibliothèque Plotly pour créer le graphique interactif -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- Conteneur dans lequel le graphique sera affiché -->
+<div id="bar-chart"></div>
+
+<script>
+  // Conversion des données JSON issues du serveur en objets JavaScript
+  var labels = JSON.parse('{{ labels|safe }}');
+  var values = JSON.parse('{{ values|safe }}');
+  
+  // Configuration des données pour le graphique en barres
+  var data = [{
+    x: labels,
+    y: values,
+    type: 'bar',
+    marker: { color: 'rgb(0,157,209)' },
+    hoverinfo: 'x+y'
+  }];
+  
+  // Définition de la mise en page et des paramètres du graphique
+  var layout = {
+    title: 'Graphique en Barres - {{ question.titre|e }}',
+    margin: { l: 60, r: 60, t: 120, b: 80 },
+    xaxis: { title: 'Options', automargin: true },
+    yaxis: { title: 'Nombre de réponses' }
+  };
+  
+  // Création du graphique dans le conteneur "bar-chart"
+  Plotly.newPlot('bar-chart', data, layout);
+</script>
+
+<!-- Lien pour revenir au tableau de bord administrateur -->
+<p><a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mt-3">Retour au Tableau de Bord</a></p>
+{% endblock %}

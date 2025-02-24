@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Rapport Interactif HTML
+{% endblock %}
+
+{% block content %}
+<!-- Titre principal de la page -->
+<h1 class="mt-4">Rapport Interactif (HTML)</h1>
+<!-- Brève description de la visualisation -->
+<p>Visualisation interactive des données.</p>
+
+<!-- Parcours de chaque élément du rapport -->
+{% for item in rapport_data %}
+  <div class="card mb-4">
+    <!-- En-tête de la carte affichant le titre de la question -->
+    <div class="card-header">
+      <h3>{{ item.question.titre }}</h3>
+    </div>
+    <!-- Corps de la carte contenant les différents graphiques -->
+    <div class="card-body">
+      <!-- Graphique en barres -->
+      <div class="mb-4">{{ item.bar_div|safe }}</div>
+      <!-- Graphique en secteurs -->
+      <div class="mb-4">{{ item.pie_div|safe }}</div>
+      <!-- Vérification de l'existence d'un sociogramme -->
+      {% if item.sociogram_div %}
+        <!-- Affichage du sociogramme -->
+        <div class="mb-4">{{ item.sociogram_div|safe }}</div>
+        <!-- Affichage des top 3 réponses les plus sélectionnées, si disponibles -->
+        {% if item.top_3 %}
+          <h5>Top 3 réponses les plus sélectionnées :</h5>
+          <ul>
+            {% for opt, count in item.top_3 %}
+              <li>{{ opt }} : {{ count }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <!-- Affichage des top 3 réponses les moins sélectionnées, si disponibles -->
+        {% if item.bottom_3 %}
+          <h5>Top 3 réponses les moins sélectionnées :</h5>
+          <ul>
+            {% for opt, count in item.bottom_3 %}
+              <li>{{ opt }} : {{ count }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% else %}
+        <!-- Message si aucun sociogramme n'est disponible pour la question -->
+        <p>Aucun sociogramme pour ce type de question.</p>
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
+
+<!-- Lien pour revenir au tableau de bord administrateur -->
+<a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Retour</a>
+{% endblock %}

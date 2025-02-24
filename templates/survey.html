@@ -1,23 +1,28 @@
-<!-- templates/survey.html -->
 {% extends "base.html" %}
-{% block title %}Sondage{% endblock %}
+
+{% block title %}
+  Sondage
+{% endblock %}
+
 {% block content %}
+<!-- Conteneur principal du formulaire de sondage -->
 <div class="wizard-container">
-    <!-- Logo de l'entreprise -->
+    <!-- Affichage du logo de l'entreprise -->
     <div class="logo text-center mb-3">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo de l'entreprise" style="max-width:150px;">
+        <img src="{{ url_for('static', filename='gbnews_logo.jpg') }}" alt="Logo de l'entreprise" style="max-width:150px;">
     </div>
-    <h1 class="mt-4 text-center">Formulaire Gestion de Projet</h1>
+    <!-- Titre du formulaire -->
+    <h1 class="mt-4 text-center">Formulaire Gestion de Projets</h1>
     <form id="surveyForm" method="POST" action="">
-        <!-- Étape 0 : Informations Personnelles -->
+        <!-- Étape 0 : Informations personnelles de l'utilisateur -->
         <div class="step" id="step-0">
             <h2>Informations Personnelles</h2>
             <div class="form-group">
-                <label for="nom">Nom et Prénom (obligatoire) :</label>
+                <label for="nom">Prénom et Nom (obligatoire) :</label>
                 <input type="text" class="form-control" name="nom" id="nom" required>
             </div>
             <div class="form-group">
-                <label for="departement">Département :</label>
+                <label for="departement">Pôle :</label>
                 <select class="form-control" name="departement" id="departement" required>
                     <option value="">-- Sélectionner --</option>
                     <option value="administration">Administration</option>
@@ -30,7 +35,7 @@
                 </select>
             </div>
         </div>
-        <!-- Étapes pour chaque question -->
+        <!-- Boucle pour afficher chaque question du sondage -->
         {% for q in questions %}
         <div class="step" id="step-{{ loop.index }}">
             <h2>{{ q.titre }}</h2>
@@ -85,13 +90,13 @@
             </div>
         </div>
         {% endfor %}
-        <!-- Étape finale : Message de remerciement -->
+        <!-- Étape finale : message de remerciement -->
         <div class="step" id="step-final">
             <h2>Merci d'avoir répondu au formulaire !</h2>
             <p>Nous vous remercions pour votre participation.</p>
             <button type="button" class="btn btn-success d-block mx-auto" id="closeBtn">Fermer la fenêtre</button>
         </div>
-        <!-- Boutons de navigation -->
+        <!-- Boutons pour naviguer entre les étapes du formulaire -->
         <div class="navigation-buttons text-center mt-3">
             <button type="button" class="btn btn-secondary" id="prevBtn" onclick="prevStep()">Précédent</button>
             <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">Suivant</button>
@@ -99,60 +104,57 @@
     </form>
 </div>
 
+<!-- Styles pour la mise en forme du formulaire -->
 <style>
-/* Styles généraux */
-body {
-    background-color: #ffffff;
-    color: #000;
-}
-
-.wizard-container {
-    max-width: 600px;
-    margin: 30px auto;
-    background: #ffffff;
-    border: 2px solid rgb(0,157,209);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0px 0px 15px rgba(0,157,209,0.3);
-}
-
-.step {
-    display: none;
-    animation: fadeIn 0.5s;
-}
-
-.step.active {
-    display: block;
-}
-
-/* Boutons de navigation */
-.navigation-buttons button {
-    margin: 5px;
-}
-
-/* Animation de fondu */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* Style des boutons avec la couleur de l'entreprise */
-.btn-primary {
-    background-color: rgb(0,157,209);
-    border-color: rgb(0,157,209);
-}
-
-.btn-primary:hover {
-    background-color: rgb(0,130,180);
-    border-color: rgb(0,130,180);
-}
-
-.btn-secondary {
-    background-color: #ccc;
-    border-color: #bbb;
-}
+  /* Style général du corps de la page */
+  body {
+      background-color: #ffffff;
+      color: #000;
+  }
+  /* Conteneur du formulaire */
+  .wizard-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #ffffff;
+      border: 2px solid rgb(0,157,209);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0px 0px 15px rgba(0,157,209,0.3);
+  }
+  /* Chaque étape est cachée par défaut */
+  .step {
+      display: none;
+      animation: fadeIn 0.5s;
+  }
+  /* Affichage de l'étape active */
+  .step.active {
+      display: block;
+  }
+  /* Espacement entre les boutons de navigation */
+  .navigation-buttons button {
+      margin: 5px;
+  }
+  /* Animation de fondu pour les étapes */
+  @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+  }
+  /* Styles personnalisés pour les boutons principaux */
+  .btn-primary {
+      background-color: rgb(0,157,209);
+      border-color: rgb(0,157,209);
+  }
+  .btn-primary:hover {
+      background-color: rgb(0,130,180);
+      border-color: rgb(0,130,180);
+  }
+  .btn-secondary {
+      background-color: #ccc;
+      border-color: #bbb;
+  }
 </style>
 
+<!-- Script pour la navigation entre les étapes du formulaire -->
 <script>
 let currentStep = 0;
 const steps = document.querySelectorAll('.step');
@@ -161,6 +163,7 @@ const nextBtn = document.getElementById('nextBtn');
 const closeBtn = document.getElementById('closeBtn');
 const form = document.getElementById('surveyForm');
 
+// Fonction pour afficher l'étape demandée et ajuster les boutons
 function showStep(n) {
     steps.forEach((step, index) => {
         step.classList.remove('active');
@@ -168,11 +171,13 @@ function showStep(n) {
             step.classList.add('active');
         }
     });
+    // Masquer le bouton "Précédent" à la première étape
     if (n === 0) {
         prevBtn.style.display = 'none';
     } else {
         prevBtn.style.display = 'inline-block';
     }
+    // Adapter le texte du bouton "Suivant" selon l'étape
     if (n === steps.length - 2) {
         nextBtn.innerText = 'Envoyer';
     } else if (n === steps.length - 1) {
@@ -184,6 +189,7 @@ function showStep(n) {
     }
 }
 
+// Passe à l'étape suivante ou soumet le formulaire si c'est la dernière étape
 function nextStep() {
     if (currentStep < steps.length - 2) {
         currentStep++;
@@ -193,6 +199,7 @@ function nextStep() {
     }
 }
 
+// Revient à l'étape précédente
 function prevStep() {
     if (currentStep > 0) {
         currentStep--;
@@ -200,6 +207,7 @@ function prevStep() {
     }
 }
 
+// Soumission du formulaire via une requête fetch
 function submitForm() {
     const formData = new FormData(form);
     fetch(form.action || window.location.href, {
@@ -217,6 +225,7 @@ function submitForm() {
     });
 }
 
+// Gestion de la fermeture de la fenêtre après soumission
 if (closeBtn) {
     closeBtn.addEventListener('click', function() {
         window.close();
@@ -226,6 +235,7 @@ if (closeBtn) {
     });
 }
 
+// Affichage de la première étape au chargement de la page
 document.addEventListener('DOMContentLoaded', function() {
     showStep(currentStep);
 });

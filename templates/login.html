@@ -1,17 +1,26 @@
-<!-- templates/login.html -->
 {% extends "base.html" %}
-{% block title %}Connexion Administrateur{% endblock %}
+
+{% block title %}
+  Connexion Administrateur
+{% endblock %}
+
 {% block content %}
+<!-- Titre de la page de connexion pour l'administrateur -->
 <h1 class="mt-4">Connexion Administrateur</h1>
+
+<!-- Formulaire de connexion en méthode POST -->
 <form method="POST">
+    <!-- Champ de saisie pour le nom d'utilisateur -->
     <div class="form-group">
         <label for="username">Nom d'utilisateur :</label>
         <input type="text" class="form-control" name="username" id="username" required>
     </div>
+    <!-- Champ de saisie pour le mot de passe -->
     <div class="form-group">
         <label for="password">Mot de passe :</label>
         <input type="password" class="form-control" name="password" id="password" required>
     </div>
+    <!-- Bouton pour soumettre le formulaire de connexion -->
     <button type="submit" class="btn btn-primary">Se connecter</button>
 </form>
 {% endblock %}
