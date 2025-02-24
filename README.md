@@ -1,192 +1,133 @@
-# **Survey Project Documentation**  
+# Projet Sondage - Gestion de Projets
 
-## **Introduction**  
-
-This project is a web-based survey application designed to allow users to answer questionnaires and administrators to dynamically manage questions and visualize responses in different graphical formats (bar chart, pie chart, sociogram). The application is built with **Python** and **Flask**, uses **SQLAlchemy** for database management, and **Flask-Login** for administrator authentication. The interface is developed with **Bootstrap** (for a responsive experience) and **Font Awesome** (for icons).  
+Une application web Flask pour gérer des sondages interactifs dans le cadre de la gestion de projets. Ce projet permet aux utilisateurs de répondre à un formulaire interactif et offre une interface administrateur pour gérer les questions, analyser les réponses et exporter les données sous divers formats (CSV, HTML interactif et PDF).
 
 ---
 
-## **Project Structure**  
+## Fonctionnalités
 
-The project is organized as follows:  
+- **Sondage interactif** :
+  - Formulaire public avec navigation étape par étape (wizard).
+  - Collecte des informations personnelles (nom, département) et réponses aux questions (types multiples, dropdown, texte, numérique, date).
 
-```
-project/
-├── application.py         # Main Flask application file
-├── models.py              # Data models definition (Question, Response)
-├── README.md              # Complete documentation (this file)
-└── templates/             # Folder containing all HTML files
-    ├── base.html          # Base template (includes links to Bootstrap, Font Awesome, favicon, etc.)
-    ├── survey.html        # Survey form accessible to users (wizard mode)
-    ├── login.html         # Administrator login form
-    ├── admin.html         # Admin dashboard (manage questions, responses, and visualizations)
-    ├── add_question.html  # Form to add a question
-    ├── edit_question.html # Form to edit an existing question
-    ├── graph.html         # Page displaying a chart (bar or pie)
-    ├── sociogram.html     # Page displaying a question's sociogram
-    └── view_response.html # Page displaying detailed response information
-└── static/                # Folder for static files
-    ├── logo.ico    # Favicon
-    └── logo.jpg    # Company logo
-```
+- **Interface administrateur** :
+  - Connexion sécurisée via Flask-Login.
+  - Tableau de bord pour gérer les questions et visualiser les réponses.
+  - Possibilité d'ajouter, modifier, supprimer et réorganiser les questions (glisser-déposer).
+
+- **Visualisations interactives** :
+  - Graphiques en barres et en secteurs interactifs créés avec Plotly.
+  - Sociogramme interactif pour visualiser les relations entre répondants et options.
+
+- **Exportation des données** :
+  - Export CSV des réponses.
+  - Rapport interactif en HTML (avec graphiques Plotly).
+  - Rapport statique en PDF généré avec Matplotlib et WeasyPrint.
 
 ---
 
-## **Prerequisites**  
+## Technologies Utilisées
 
-- **Python 3.x** installed on your machine.  
-- The following Python modules must be installed:  
+- **Flask** -- Framework web Python léger.
+- **Flask-SQLAlchemy** -- Gestion de la base de données avec SQLAlchemy.
+- **Flask-Login** -- Authentification et gestion des sessions.
+- **Plotly** -- Création de graphiques interactifs.
+- **Matplotlib** -- Génération de graphiques statiques pour le PDF.
+- **WeasyPrint** -- Conversion de HTML en PDF.
+- **Bootstrap** -- Framework CSS pour une interface réactive.
+- **Font Awesome** -- Collection d'icônes.
+
+---
+
+## Installation
+
+1. **Cloner le dépôt GitHub :**
+
+```
+   git clone https://github.com/n4ths1n/SondageX
+```
+
+2.  **Créer un environnement virtuel et installer les dépendances :**
+
+```
+python3 -m venv venv
+source venv/bin/activate   # Sur Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+3.  **Configurer la base de données :**
+
+Par défaut, l'application utilise SQLite (fichier survey.db). Vous pouvez adapter la configuration dans application.py.
+
+4.  **Lancer l'application :**
+
+```
+python application.py
+```
+
+L'application sera accessible à l'adresse <http://X.X.X.X:5000>.
+
+**Structure du Projet**
 
 ```bash
-pip install flask flask_sqlalchemy flask_login matplotlib networkx pandas
+.
+├── application.py         # Point d'entrée et logique serveur de l'application Flask
+├── models.py              # Définition des modèles de données (Question et Response)
+├── templates/             # Dossier contenant tous les fichiers de templates HTML
+│   ├── admin.html         # Tableau de bord administrateur
+│   ├── ajouter_question.html   # Formulaire d'ajout de question
+│   ├── base.html          # Template de base pour l'ensemble des pages
+│   ├── graph_ploty_bar.html     # Graphique interactif en barres (Plotly)
+│   ├── graph_plotly_pie.html    # Graphique interactif en secteurs (Plotly)
+│   ├── graph_plotly_sociogram.html  # Sociogramme interactif (Plotly)
+│   ├── graph.html         # Affichage statique d'un graphique (image Base64)
+│   ├── login.html         # Formulaire de connexion pour l'administrateur
+│   ├── modifier_question.html   # Formulaire de modification de question
+│   ├── rapport_export_interactif.html  # Rapport interactif en HTML
+│   ├── rapport_export_pdf.html  # Rapport statique en PDF
+│   ├── rapport_export.html      # Rapport détaillé avec téléchargement des graphiques
+│   ├── sociogramme.html   # Affichage statique du sociogramme (image Base64)
+│   ├── survey.html        # Formulaire public du sondage (wizard)
+│   └── voir_reponse.html  # Affichage détaillé d'une réponse
+└── README.md              # Documentation et instructions (ce fichier)
 ```
 
----
+**Utilisation**
 
-## **Installation and Configuration**  
+**Sondage Public**
 
-1. **Clone the project** into your working directory.  
+-  Rendez-vous sur l'URL racine pour accéder au formulaire du sondage.
 
-2. **Create a virtual environment** (optional but recommended):  
+-  Remplissez le formulaire en fournissant vos informations personnelles et vos réponses aux questions.
 
-   - On Windows:  
-     ```batch
-     python -m venv env
-     env\Scripts\activate
-     ```
-   - On Linux/Mac:  
-     ```bash
-     python3 -m venv env
-     source env/bin/activate
-     ```
+-  Utilisez les boutons "Précédent" et "Suivant" pour naviguer entre les étapes.
 
-3. **Install dependencies** (if not already installed):  
-   ```bash
-   pip install flask flask_sqlalchemy flask_login matplotlib networkx pandas
-   ```
+-  Une fois le formulaire soumis, un message de remerciement s'affiche.
 
-4. **Place static files**:  
-   - Copy `logo.ico` into the `static/` folder (this will be your favicon).  
-   - Copy `logo.jpg` into the `static/` folder (this will be the company logo).  
+**Interface Administrateur**
 
-5. **Run the application**:  
+-  Accédez à /login pour vous connecter en tant qu'administrateur (identifiants par défaut : admin / admin).
 
-   From the project root, execute:  
-   ```bash
-   python application.py
-   ```
-   The application will be accessible at [http://X.X.X.X:5000](http://X.X.X.X:5000).  
+-  Une fois connecté, le tableau de bord vous permet de :
 
-6. **Access the admin interface**:  
+-  Gérer les questions (ajouter, modifier, supprimer, réorganiser).
 
-   Go to [http://X.X.X.X:5000/login](http://X.X.X.X:5000/login)  
-   (Username: **admin**, Password: **admin**).  
+-  Visualiser et supprimer les réponses.
 
----
+-  Exporter les données sous différents formats (CSV, HTML interactif, PDF).
 
-## **Key Files Description**  
+-  Afficher des graphiques interactifs pour analyser les réponses.
 
-### 1. `application.py`  
+**Remarques**
 
-- **Flask and SQLAlchemy Configuration**:  
-  Initializes the application with an SQLite database and defines the secret key.  
+-  **Configuration par défaut :**
 
-- **Authentication Management**:  
-  Uses **Flask-Login** to manage the administrator (predefined account `admin`/`admin`).  
+L'application est configurée pour s'exécuter sur l'hôte X.X.X.X et le port 5000. Vous pouvez modifier ces paramètres dans application.py.
 
-- **Main Routes**:  
-  - `/` : Displays the survey form accessible to all users.  
-  - `/login` and `/logout` : Handle administrator login/logout.  
-  - `/admin` : Admin dashboard for managing questions and viewing responses.  
-  - Routes to add, edit, and delete questions.  
-  - Routes to display visualizations (bar chart, pie chart, sociogram) for each question.  
-  - Route to display an individual response (`/response/<int:response_id>`).  
+-  **Initialisation de la Base de Données :**
 
-- **Note on `@app.before_request`**:  
-  The function decorated with `@app.before_request` is used to create tables and insert default data if no questions exist.  
+Lors de la première exécution, si aucune question n'est présente, des questions par défaut seront insérées automatiquement dans la base de données.
 
-### 2. `models.py`  
+-  **Dépendances :**
 
-- **Model `Question`**:  
-  - `title` : The question text.  
-  - `question_type` : The expected response type (e.g., `multiple`, `dropdown`, `dropdown9`, `text`, `numeric`, `date`).  
-  - `options` : Response options stored in JSON format (used for types like `multiple` or `dropdown`).  
-
-- **Model `Response`**:  
-  - `name` : Respondent's name.  
-  - `department` : Respondent's department.  
-  - `answers` : Answers provided by the respondent (stored as JSON).  
-  - `timestamp` : Date and time of the response.  
-
-### 3. HTML Templates  
-
-- **`base.html`**:  
-  The base template includes:  
-  - A meta viewport tag for responsive design.  
-  - Links to Bootstrap and Font Awesome.  
-  - The favicon (`logo.ico`).  
-  - A basic structure to display flash messages and content from other templates.  
-
-- **`survey.html`**:  
-  The user survey form in "wizard" mode (multi-step):  
-  - Step 0: Personal information (Name, Surname, and Department via a dropdown).  
-  - Following steps: One step per question. The displayed input type depends on `question_type` (checkbox, dropdown, text, numeric, date, etc.).  
-  - Final step: Thank you message and a "Close Window" button centered on the page.  
-
-- **`login.html`**:  
-  Administrator login form.  
-
-- **`admin.html`**:  
-  The administrator dashboard allowing:  
-  - Managing questions (add, edit, delete).  
-  - Viewing response visualizations (bar chart, pie chart, sociogram).  
-  - Viewing the list of responses and accessing detailed responses.  
-  - Deleting all responses with a dedicated button.  
-
-- **`add_question.html` and `edit_question.html`**:  
-  Forms for creating or editing a question. The administrator can select `question_type` from several options (`multiple`, `dropdown`, `dropdown9`, `text`, `numeric`, `date`) and enter response options if applicable.  
-
-- **`graph.html`**:  
-  Displays a generated chart (bar or pie) for a given question.  
-
-- **`sociogram.html`**:  
-  Displays the sociogram for a given question (graphical representation of relationships between respondents and response options).  
-
-- **`view_response.html`**:  
-  Displays detailed user response data.  
-
----
-
-## **Graphical Visualizations**  
-
-For each question, three visualization options are available in the admin panel:  
-
-- **Bar Chart** : Displays the number of responses per option.  
-- **Pie Chart** : Shows the percentage distribution of responses.  
-- **Sociogram** : Graphically represents relationships between respondents and response options (uses NetworkX).  
-
-These visualizations are generated dynamically and displayed on dedicated pages.  
-
----
-
-## **Security and Authentication**  
-
-Authentication is managed via **Flask-Login**. Only the administrator (predefined account) can access admin pages and manage questions/responses.  
-
----
-
-## **Deployment**  
-
-For production deployment, it is recommended to use a WSGI server (such as **Gunicorn** or **uWSGI**) and configure a reverse proxy (with **Nginx** or **Apache**) to handle requests and the domain (you can replace the IP with a domain name).  
-
----
-
-## **Conclusion**  
-
-This project provides a complete solution for conducting and managing online surveys. It includes:  
-
-- A modern, responsive user survey form.  
-- A full-featured admin dashboard with dynamic question management and graphical visualizations.  
-- Various response types and detailed visual representations.  
-
-We hope this detailed documentation helps you understand, deploy, and customize the project according to your needs. 🚀
+Assurez-vous d'avoir installé toutes les dépendances listées dans le fichier requirements.txt.
